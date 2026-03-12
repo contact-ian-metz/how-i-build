@@ -223,7 +223,7 @@ function OutputList({ outputs, phaseColor }) {
             paddingLeft: 20,
             marginTop: 3,
             ...(output.children.length > 4
-              ? { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2px 16px" }
+              ? { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "2px 16px" }
               : {}),
           }}>
             {output.children.map((child, k) => (
@@ -338,55 +338,57 @@ export default function WorkflowDiagram() {
           THE PROCESS
         </div>
 
-        {/* Phase labels row */}
-        <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
-          {phases.map((phase) => (
+        {/* Scrollable phases + pipeline wrapper */}
+        <div style={{ overflowX: "auto" }}>
+          <div style={{ minWidth: 900 }}>
+            {/* Phase labels row */}
+            <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
+              {phases.map((phase) => (
+                <div
+                  key={phase.id}
+                  style={{
+                    flex: phase.stageIds.length,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                    padding: "10px 14px",
+                    background: `${phase.color}10`,
+                    borderTop: `2px solid ${phase.color}`,
+                    borderLeft: `1px solid ${phase.color}22`,
+                    borderRight: `1px solid ${phase.color}22`,
+                    borderRadius: "8px 8px 0 0",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      letterSpacing: 2,
+                      color: phase.color,
+                      textTransform: "uppercase",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {phase.label}
+                  </span>
+                  <span style={{ fontSize: 10, color: GRAY, lineHeight: 1.4 }}>
+                    {phase.description}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Main Pipeline */}
             <div
-              key={phase.id}
               style={{
-                flex: phase.stageIds.length,
                 display: "flex",
-                flexDirection: "column",
-                gap: 4,
-                padding: "10px 14px",
-                background: `${phase.color}10`,
-                borderTop: `2px solid ${phase.color}`,
-                borderLeft: `1px solid ${phase.color}22`,
-                borderRight: `1px solid ${phase.color}22`,
-                borderRadius: "8px 8px 0 0",
+                alignItems: "stretch",
+                gap: 0,
+                paddingTop: 8,
+                paddingBottom: 8,
               }}
             >
-              <span
-                style={{
-                  fontSize: 10,
-                  fontWeight: 700,
-                  letterSpacing: 2,
-                  color: phase.color,
-                  textTransform: "uppercase",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {phase.label}
-              </span>
-              <span style={{ fontSize: 10, color: GRAY, lineHeight: 1.4 }}>
-                {phase.description}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Main Pipeline */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "stretch",
-            gap: 0,
-            overflowX: "auto",
-            paddingTop: 8,
-            paddingBottom: 8,
-          }}
-        >
-          {stages.map((stage, i) => {
+              {stages.map((stage, i) => {
             const isActive = activeStage === stage.id;
             const isHovered = hoveredStage === stage.id;
             const highlighted = isActive || isHovered;
@@ -475,7 +477,9 @@ export default function WorkflowDiagram() {
                 )}
               </div>
             );
-          })}
+              })}
+            </div>
+          </div>
         </div>
 
         {/* Detail panel */}
